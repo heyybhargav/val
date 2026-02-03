@@ -72,20 +72,18 @@ function updateTapCounter() {
 
 // ===== Get Random Position =====
 function getRandomPosition() {
-    const container = document.querySelector('.buttons-container');
-    const containerRect = container.getBoundingClientRect();
+    // Get viewport dimensions
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
     const btnRect = noBtn.getBoundingClientRect();
 
-    // Calculate available space within the card
-    const card = document.querySelector('.card');
-    const cardRect = card.getBoundingClientRect();
+    // Keep button within visible area with padding
+    const padding = 60;
+    const maxX = (viewportWidth - btnRect.width) / 2 - padding;
+    const maxY = 150; // Limit vertical movement
 
-    const padding = 20;
-    const maxX = cardRect.width - btnRect.width - padding * 2;
-    const maxY = cardRect.height - btnRect.height - padding * 2;
-
-    const randomX = Math.random() * maxX - maxX / 2;
-    const randomY = Math.random() * maxY - maxY / 2;
+    const randomX = (Math.random() - 0.5) * maxX * 2;
+    const randomY = (Math.random() - 0.5) * maxY;
 
     return { x: randomX, y: randomY };
 }
@@ -107,13 +105,17 @@ function escapeNoButton(event) {
     showPlayfulMessage();
     updateTapCounter();
 
-    // Grow the Yes button
-    if (noTapCount <= 5) {
-        yesBtn.style.transform = `scale(${1 + noTapCount * 0.08})`;
+    // Grow the Yes button gradually
+    if (noTapCount <= 8) {
+        yesBtn.style.transform = `scale(${1 + noTapCount * 0.05})`;
     }
 
-    // Shrink the No button (slower - takes more taps!)
-    currentScale = Math.max(0.3, 1 - noTapCount * 0.04);
+    // Only start shrinking after 4 taps, and shrink slowly
+    if (noTapCount > 4) {
+        currentScale = Math.max(0.5, 1 - (noTapCount - 4) * 0.05);
+    } else {
+        currentScale = 1; // Stay full size for first 4 taps
+    }
 
     // Get random position
     const pos = getRandomPosition();
@@ -121,7 +123,11 @@ function escapeNoButton(event) {
     // Apply escape animation
     noBtn.classList.add('escaping');
     noBtn.style.transform = `translate(${pos.x}px, ${pos.y}px) scale(${currentScale})`;
-    noBtn.style.fontSize = `${Math.max(0.8, 1.25 - noTapCount * 0.05)}rem`;
+
+    // Only shrink font after 4 taps
+    if (noTapCount > 4) {
+        noBtn.style.fontSize = `${Math.max(0.9, 1.25 - (noTapCount - 4) * 0.03)}rem`;
+    }
 
     // Remove escaping class after animation
     setTimeout(() => {
