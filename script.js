@@ -34,7 +34,7 @@ const playfulMessages = [
 // ===== Initialize Floating Hearts =====
 function createFloatingHearts() {
     const hearts = ['💕', '💖', '💗', '💝', '💓', '❤️', '🌹', '✨'];
-    
+
     for (let i = 0; i < 15; i++) {
         const heart = document.createElement('span');
         heart.className = 'floating-heart';
@@ -56,10 +56,10 @@ function getRandomMessage() {
 function showPlayfulMessage() {
     playfulMessage.textContent = getRandomMessage();
     playfulMessage.classList.remove('show');
-    
+
     // Force reflow for animation
     void playfulMessage.offsetWidth;
-    
+
     playfulMessage.classList.add('show');
 }
 
@@ -75,18 +75,18 @@ function getRandomPosition() {
     const container = document.querySelector('.buttons-container');
     const containerRect = container.getBoundingClientRect();
     const btnRect = noBtn.getBoundingClientRect();
-    
+
     // Calculate available space within the card
     const card = document.querySelector('.card');
     const cardRect = card.getBoundingClientRect();
-    
+
     const padding = 20;
     const maxX = cardRect.width - btnRect.width - padding * 2;
     const maxY = cardRect.height - btnRect.height - padding * 2;
-    
+
     const randomX = Math.random() * maxX - maxX / 2;
     const randomY = Math.random() * maxY - maxY / 2;
-    
+
     return { x: randomX, y: randomY };
 }
 
@@ -97,32 +97,32 @@ function escapeNoButton(event) {
         event.preventDefault();
         event.stopPropagation();
     }
-    
+
     if (isEscaping) return;
     isEscaping = true;
-    
+
     noTapCount++;
-    
+
     // Show message and update counter
     showPlayfulMessage();
     updateTapCounter();
-    
+
     // Grow the Yes button
     if (noTapCount <= 5) {
         yesBtn.style.transform = `scale(${1 + noTapCount * 0.08})`;
     }
-    
-    // Shrink the No button
-    currentScale = Math.max(0.4, 1 - noTapCount * 0.08);
-    
+
+    // Shrink the No button (slower - takes more taps!)
+    currentScale = Math.max(0.3, 1 - noTapCount * 0.04);
+
     // Get random position
     const pos = getRandomPosition();
-    
+
     // Apply escape animation
     noBtn.classList.add('escaping');
     noBtn.style.transform = `translate(${pos.x}px, ${pos.y}px) scale(${currentScale})`;
     noBtn.style.fontSize = `${Math.max(0.8, 1.25 - noTapCount * 0.05)}rem`;
-    
+
     // Remove escaping class after animation
     setTimeout(() => {
         noBtn.classList.remove('escaping');
@@ -134,10 +134,10 @@ function escapeNoButton(event) {
 function triggerCelebration() {
     // Create confetti
     createConfetti();
-    
+
     // Show overlay
     celebrationOverlay.classList.add('active');
-    
+
     // Play celebration sound (optional, browsers may block auto-play)
     // You could add a sound file here if desired
 }
@@ -145,7 +145,7 @@ function triggerCelebration() {
 // ===== Create Confetti =====
 function createConfetti() {
     const colors = ['#ff6b9d', '#ffd700', '#ff6b6b', '#4ade80', '#a855f7', '#3b82f6', '#f59e0b'];
-    
+
     for (let i = 0; i < 100; i++) {
         const confetti = document.createElement('div');
         confetti.className = 'confetti';
@@ -153,14 +153,14 @@ function createConfetti() {
         confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
         confetti.style.animationDelay = Math.random() * 2 + 's';
         confetti.style.animationDuration = (3 + Math.random() * 2) + 's';
-        
+
         // Random shapes
         if (Math.random() > 0.5) {
             confetti.style.borderRadius = '50%';
             confetti.style.width = '12px';
             confetti.style.height = '12px';
         }
-        
+
         confettiContainer.appendChild(confetti);
     }
 }
@@ -198,7 +198,7 @@ yesBtn.addEventListener('touchend', (e) => {
 // ===== Initialize =====
 document.addEventListener('DOMContentLoaded', () => {
     createFloatingHearts();
-    
+
     // Prevent pull-to-refresh on mobile
     document.body.addEventListener('touchmove', (e) => {
         if (e.target === document.body) {
